@@ -14,8 +14,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "vscode-to-vs.convertToVS",
-        "title": "Convert VSCode to VS"
+        "command": "extension.generateCppSolution",
+        "title": "Generate C++ Solution Files"
       }
     ]
   },
