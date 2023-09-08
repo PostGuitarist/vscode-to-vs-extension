@@ -3,7 +3,7 @@ import * as path from 'path';
 
 export function activate(context: vscode.ExtensionContext) {
 	// Register a command that runs your Rust code
-    let disposable = vscode.commands.registerCommand('extension.runRustCode', async () => {
+    let disposable = vscode.commands.registerCommand('extension.convertToVS', async () => {
         try {
             const wasmModulePath = path.join(__dirname, '..', 'rust_code', 'your_project_name_bg.wasm');
             const { instance } = await import(wasmModulePath);
