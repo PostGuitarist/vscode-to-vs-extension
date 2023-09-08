@@ -12,10 +12,10 @@ export function activate(context: vscode.ExtensionContext) {
             instance.exports.main();
 
 			// Show a success message
-            vscode.window.showInformationMessage('Rust code executed successfully.');
+            vscode.window.showInformationMessage('COnverted successfully.');
         } catch (error) {
 			// Show an error message
-            vscode.window.showErrorMessage(`Error executing Rust code: ${error}`);
+            vscode.window.showErrorMessage(`Error executing: ${error}`);
         }
     });
 

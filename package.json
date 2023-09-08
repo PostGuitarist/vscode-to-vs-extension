@@ -15,7 +15,7 @@
     "commands": [
       {
         "command": "vscode-to-vs.convertToVS",
-        "title": "Hello World"
+        "title": "Convert VSCode to VS"
       }
     ]
   },
