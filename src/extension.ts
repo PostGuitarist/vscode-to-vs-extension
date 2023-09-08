@@ -7,9 +7,6 @@ export function activate(context: vscode.ExtensionContext) {
         try {
             // Run the generateSolutionFiles function
             generateSolutionFiles();
-
-			// Show a success message
-            vscode.window.showInformationMessage('Converted successfully.');
         } catch (error) {
 			// Show an error message
             vscode.window.showErrorMessage(`Error executing: ${error}`);
