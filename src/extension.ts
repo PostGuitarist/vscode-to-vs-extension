@@ -1,18 +1,15 @@
 import * as vscode from 'vscode';
-import * as path from 'path';
+import { generateSolutionFiles } from './generateSolution';
 
 export function activate(context: vscode.ExtensionContext) {
-	// Register a command that runs your Rust code
-    let disposable = vscode.commands.registerCommand('extension.convertToVS', async () => {
+	// Register the command
+    let disposable = vscode.commands.registerCommand('extension.generateCppSolution', async () => {
         try {
-            const wasmModulePath = path.join(__dirname, '..', 'rust_code', 'your_project_name_bg.wasm');
-            const { instance } = await import(wasmModulePath);
-
-            // Call a function from your Rust WebAssembly module
-            instance.exports.main();
+            // Run the generateSolutionFiles function
+            generateSolutionFiles();
 
 			// Show a success message
-            vscode.window.showInformationMessage('COnverted successfully.');
+            vscode.window.showInformationMessage('Converted successfully.');
         } catch (error) {
 			// Show an error message
             vscode.window.showErrorMessage(`Error executing: ${error}`);
