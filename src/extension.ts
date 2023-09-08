@@ -1,26 +1,27 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as path from 'path';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+	// Register a command that runs your Rust code
+    let disposable = vscode.commands.registerCommand('extension.runRustCode', async () => {
+        try {
+            const wasmModulePath = path.join(__dirname, '..', 'rust_code', 'your_project_name_bg.wasm');
+            const { instance } = await import(wasmModulePath);
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "vscode-to-vs" is now active!');
+            // Call a function from your Rust WebAssembly module
+            instance.exports.main();
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('vscode-to-vs.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from vscode-to-vs!');
-	});
+			// Show a success message
+            vscode.window.showInformationMessage('Rust code executed successfully.');
+        } catch (error) {
+			// Show an error message
+            vscode.window.showErrorMessage(`Error executing Rust code: ${error}`);
+        }
+    });
 
-	context.subscriptions.push(disposable);
+	// Register the command
+    context.subscriptions.push(disposable);
 }
 
-// This method is called when your extension is deactivated
+// this method is called when your extension is deactivated
 export function deactivate() {}
