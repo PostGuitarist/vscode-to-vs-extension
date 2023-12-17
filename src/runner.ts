@@ -1,49 +1,53 @@
-import * as fs from "fs";
+import * as vscode from "vscode";
+import * as child_process from "child_process";
 import * as path from "path";
 
-function generate_solution_files(working_directory: string): void {
-  // Read the contents of the code file
-  const code_file_contents = fs.readFileSync(working_directory, "utf8");
+export function run() {
+    // Get the active text editor
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        vscode.window.showErrorMessage("No active editor found");
+        return;
+    }
 
-  // Generate a new GUID
-  const guid = generate_guid();
+    // Get the file path of the active text editor
+    const file_path = editor.document.uri.fsPath;
 
-  // Generate the solution file contents
-  const solution_file_contents = `
-  Microsoft Visual Studio Solution File, Format Version 12.00
-  # Visual Studio 15
-  VisualStudioVersion = 15.0.26124.0
-  MinimumVisualStudioVersion = 10.0.40219.1
-  Project("{${guid}}") = "MyProject", "MyProject.vcxproj", "{${guid}}"
-      ProjectSection(ProjectDependencies) = postProject
-      EndProjectSection
-  EndProject
-  Global
-      GlobalSection(SolutionConfigurationPlatforms) = preSolution
-          Debug|Win32 = Debug|Win32
-          Release|Win32 = Release|Win32
-          Debug|x64 = Debug|x64
-          Release|x64 = Release|x64
-      EndGlobalSection
-      GlobalSection(ProjectConfigurationPlatforms) = postSolution
-          {${guid}}.Debug|Win32.ActiveCfg = Debug|Win32
-          {${guid}}.Debug|Win32.Build.0 = Debug|Win32
-          {${guid}}.Release|Win32.ActiveCfg = Release|Win32
-          {${guid}}.Release|Win32.Build.0 = Release|Win32
-          {${guid}}.Debug|x64.ActiveCfg = Debug|x64
-          {${guid}}.Debug|x64.Build.0 = Debug|x64
-          {${guid}}.Release|x64.ActiveCfg = Release|x64
-          {${guid}}.Release|x64.Build.0 = Release|x64
-      EndGlobalSection
-      GlobalSection(SolutionProperties) = preSolution
-          HideSolutionNode = FALSE
-      EndGlobalSection
-  EndGlobal
-  `;
+    // Check if the file is a C++ file
+    if (!file_path.endsWith(".cpp") && !file_path.endsWith(".h")) {
+        vscode.window.showErrorMessage("File is not a C++ file");
+        return;
+    }
 
-  // Write the solution file to disk
-  const solution_file_path = path.join(working_directory, "MyProject.sln");
-  fs.writeFileSync(solution_file_path, solution_file_contents);
+    // Get the directory path of the active text editor
+    const dir_path = path.dirname(file_path);
 
-  console.log(`Solution file generated at ${solution_file_path}`);
+    // Generate the solution files using MSBuild
+    const msbuild_process = child_process.spawn(
+        "msbuild",
+        ["/t:ClCompile", "/p:Configuration=Debug"],
+        {
+            cwd: dir_path,
+        }
+    );
+
+    // Handle MSBuild output
+    msbuild_process.stdout.on("data", (data) => {
+        console.log(`stdout: ${data}`);
+    });
+
+    msbuild_process.stderr.on("data", (data) => {
+        console.error(`stderr: ${data}`);
+    });
+
+    msbuild_process.on("close", (code) => {
+        console.log(`MSBuild process exited with code ${code}`);
+        if (code === 0) {
+            vscode.window.showInformationMessage(
+                "Solution files generated successfully"
+            );
+        } else {
+            vscode.window.showErrorMessage("Failed to generate solution files");
+        }
+    });
 }

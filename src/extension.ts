@@ -1,12 +1,12 @@
 import * as vscode from 'vscode';
-import { generateSolutionFiles } from './generateSolution';
+import { run } from './runner';
 
 export function activate(context: vscode.ExtensionContext) {
 	// Register the command
     let disposable = vscode.commands.registerCommand('extension.generateCppSolution', async () => {
         try {
             // Run the generateSolutionFiles function
-            generateSolutionFiles();
+            run();
         } catch (error) {
 			// Show an error message
             vscode.window.showErrorMessage(`Error executing: ${error}`);
