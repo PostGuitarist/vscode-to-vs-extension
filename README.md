@@ -20,20 +20,20 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
+  <!-- 
   <a href="https://github.com/postguitarist/vscode-to-vs-extension">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
+  -->
 
 <h3 align="center">VSCode to VS Extension</h3>
 
   <p align="center">
-    vSCode extension to create the solution files needed for a Visual Studio C++ project with just source files
+    VSCode extension to create the solution files needed for a Visual Studio C++ project with just source files
     <br />
     <a href="https://github.com/postguitarist/vscode-to-vs-extension"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/postguitarist/vscode-to-vs-extension">View Demo</a>
-    ·
     <a href="https://github.com/postguitarist/vscode-to-vs-extension/issues">Report Bug</a>
     ·
     <a href="https://github.com/postguitarist/vscode-to-vs-extension/issues">Request Feature</a>
@@ -73,7 +73,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://zadenconnell.tech)
+[![VSCode to VS Extension Screen Shot][product-screenshot]](https://zadenconnell.tech)
 
 Microsoft products can be dumb. I wanted to make a C++ project 
 on a Mac, but Microsoft does not support Visual Studio on Mac, and recently annoucned that Visual Studio for Mac would be losing support. I wanted to use VSCode. But it also needed to be compatible with Visual Studio on Windows (Mostly for university reasons). So I made this extension based on wzid's [vscode-to-vs](https://github.com/wzid/vscode-to-vs) extension (with permission).
@@ -85,7 +85,6 @@ on a Mac, but Microsoft does not support Visual Studio on Mac, and recently anno
 ### Built With
 
 * [![TypeScript][TS.com]][TS-url]
-* [![Rust][Rust.com]][Rust-url]
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -108,8 +107,7 @@ This is an example of how to list things you need to use the software and how to
 
 ### Installation
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. Clone the repo
    ```sh
    git clone https://github.com/postguitarist/vscode-to-vs-extension.git
    ```
@@ -117,10 +115,19 @@ This is an example of how to list things you need to use the software and how to
    ```sh
    npm install
    ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
+4. Build the extension
+   ```sh
+    npm run build
+    ```
+5. Install the extension
+    ```sh
+      code --install-extension vscode-to-vs-0.0.1.vsix
+      ```
+6. Reload VSCode
+    ```sh
+      code --reload
+      ```
+7. Open the command palette and type "VSCode to VS: Create Solution"
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -176,7 +183,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@ConnellZaden](https://twitter.com/ConnellZaden) - zaden.connell@gmail.com
+Zaden Connell - [@ConnellZaden](https://twitter.com/ConnellZaden) - zaden.connell@gmail.com - [zadenconnell.tech](https://zadenconnell.tech)
 
 Project Link: [https://github.com/postguitarist/vscode-to-vs-extension](https://github.com/postguitarist/vscode-to-vs-extension)
 
@@ -210,5 +217,3 @@ Project Link: [https://github.com/postguitarist/vscode-to-vs-extension](https://
 [product-screenshot]: images/screenshot.png
 [TS.com]: https://img.shields.io/badge/typescript-0769AD?style=for-the-badge&logo=typescript&logoColor=white
 [TS-url]: https://www.typescriptlang.org
-[Rust.com]: https://img.shields.io/badge/Rust-FF2D20?style=for-the-badge&logo=rust&logoColor=white
-[Rust-url]: https://www.rust-lang.org
