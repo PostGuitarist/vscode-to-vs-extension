@@ -1,15 +1,19 @@
 import * as assert from 'assert';
-
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
 import * as vscode from 'vscode';
-// import * as myExtension from '../../extension';
+import { generateGUID } from '../../src/guidGenerator';
+import { generateVSProjectFiles } from '../../src/projectGenerator';
 
 suite('Extension Test Suite', () => {
-	vscode.window.showInformationMessage('Start all tests.');
+    vscode.window.showInformationMessage('Start all tests.');
 
-	test('Sample test', () => {
-		assert.strictEqual(-1, [1, 2, 3].indexOf(5));
-		assert.strictEqual(-1, [1, 2, 3].indexOf(0));
-	});
+    test('generateGUID generates a valid GUID', () => {
+        const guid = generateGUID();
+        assert.match(guid, /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+    });
+
+    test('generateVSProjectFiles generates the correct files', async () => {
+        // TODO: Set up the necessary preconditions for the test
+        await generateVSProjectFiles();
+        // TODO: Check that the correct files were generated
+    });
 });
