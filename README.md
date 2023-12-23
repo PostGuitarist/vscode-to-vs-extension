@@ -76,7 +76,7 @@
 [![VSCode to VS Extension Screen Shot][product-screenshot]](https://zadenconnell.tech)
 
 Microsoft products can be dumb. I wanted to make a C++ project 
-on a Mac, but Microsoft does not support Visual Studio on Mac, and recently annoucned that Visual Studio for Mac would be losing support. I wanted to use VSCode. But it also needed to be compatible with Visual Studio on Windows (Mostly for university reasons). So I made this extension based on wzid's [vscode-to-vs](https://github.com/wzid/vscode-to-vs) extension (with permission).
+on a Mac, but Microsoft does not support Visual Studio on Mac and recently announced that Visual Studio for Mac would be losing support. I wanted to use VSCode. But it also needed to be compatible with Visual Studio on Windows (Mostly for university reasons). So I made this extension based on wzid's [vscode-to-vs](https://github.com/wzid/vscode-to-vs) extension (with permission).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -136,7 +136,7 @@ This is an example of how to list things you need to use the software and how to
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Currently, the extension is not published to the VSCode marketplace. To use it, you must clone the repo (or downlaod a release) and install it manually. To do this, follow these steps from the [VSCode documentation](https://code.visualstudio.com/docs/editor/extension-marketplace#:~:text=You%20can%20manually%20install%20a,point%20to%20the%20.vsix%20file.):
+Currently, the extension is not published in the VSCode marketplace. To use it, you must clone the repo (or download a release) and install it manually. To do this, follow these steps from the [VSCode documentation](https://code.visualstudio.com/docs/editor/extension-marketplace#:~:text=You%20can%20manually%20install%20a,point%20to%20the%20.vsix%20file.):
 
 _For more examples, please refer to the [Documentation](https://example.com)_
 
@@ -156,7 +156,7 @@ See the [open issues](https://github.com/postguitarist/vscode-to-vs-extension/is
 <!-- CONTRIBUTING -->
 ## Contributing
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
 If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
 Don't forget to give the project a star! Thanks again!
