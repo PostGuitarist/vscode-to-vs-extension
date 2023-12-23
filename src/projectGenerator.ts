@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { v4 as uuidv4 } from 'uuid';
+import { generateGUID } from './guidGenerator';
 
 export function generateVSProjectFiles() {
     // Get the current project name
@@ -60,8 +60,8 @@ export function generateVSProjectFiles() {
     });
 
     // Generate the project and solution IDs
-    const projectId = uuidv4();
-    const solutionId = uuidv4();
+    const projectId = generateGUID();
+    const solutionId = generateGUID();
 
     // Copy and update the files
     files.forEach(file => {
