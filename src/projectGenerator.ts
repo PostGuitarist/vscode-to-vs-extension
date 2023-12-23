@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 
 export function generateVSProjectFiles() {
     // Get the current project name
@@ -56,6 +57,20 @@ export function generateVSProjectFiles() {
     sourceFiles.forEach(file => {
         const destPath = path.join(__dirname, file.path);
         fs.writeFileSync(destPath, file.content);
+    });
+
+    // Generate the project and solution IDs
+    const projectId = uuidv4();
+    const solutionId = uuidv4();
+
+    // Copy and update the files
+    files.forEach(file => {
+        const content = fs.readFileSync(file.srcPath, 'utf8');
+        const updatedContent = content
+            .replace(/NAME/g, projectName)
+            .replace(/PROJECTID/g, projectId)
+            .replace(/SOLUTIONID/g, solutionId);
+        fs.writeFileSync(file.destPath, updatedContent);
     });
 
     vscode.window.showInformationMessage('Visual Studio project files generated successfully');
