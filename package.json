@@ -2,7 +2,7 @@
   "name": "vscode-to-vs",
   "displayName": "vscode-to-vs",
   "description": "Creates solution files for a Visual Studio C++ project with just source files",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.82.0"
   },
