@@ -21,7 +21,7 @@ const guidGenerator_1 = __webpack_require__(5);
 function generateVSProjectFiles() {
     // Get the current project name from the workspace folder
     const projectName = vscode.workspace.name;
-    /* eslint-disable */ console.log(...oo_oo(`3130911147_10_2_10_26_4`, projectName));
+    /* eslint-disable */ console.log(...oo_oo(`336983786_10_2_10_26_4`, projectName));
     if (!projectName) {
         vscode.window.showErrorMessage("No workspace is currently open.");
         return;
@@ -29,15 +29,12 @@ function generateVSProjectFiles() {
     // Folder where the project files will be generated
     const projectDir = path.join(vscode.workspace.rootPath, projectName);
     const projectFolder = path.join(projectDir, projectName);
-    const debugFolder = path.join(projectDir, "x64/Debug");
     // Create the folders
     try {
         // Create the main directory folder
         fs.mkdirSync(projectDir, { recursive: true });
         // Create the project folder inside the main directory
         fs.mkdirSync(projectFolder, { recursive: true });
-        // Create the x64/Debug folder inside the main directory
-        fs.mkdirSync(debugFolder, { recursive: true });
     }
     catch (error) {
         vscode.window.showErrorMessage("Error creating folders.");
@@ -52,7 +49,7 @@ function generateVSProjectFiles() {
         return;
     }
     try {
-        replaceIdsInFiles(projectFolder, projectName, projectDir);
+        replaceIdsInSolutionFile(projectName, projectDir);
     }
     catch (error) {
         vscode.window.showErrorMessage("Error replacing IDs.");
@@ -86,17 +83,18 @@ function copyFilesRename(projectFolder, projectDir, projectName) {
             fs.renameSync(path.join(projectFolder, file), path.join(projectFolder, newFileName));
         }
     });
+    // Rename the template.sln file
+    const oldPath = path.join(projectDir, 'template.sln');
+    const newPath = path.join(projectDir, `${projectName}.sln`);
+    fs.renameSync(oldPath, newPath);
 }
-function replaceIdsInFiles(projectFolder, projectName, projectDir) {
-    const files = fs.readdirSync(projectFolder);
-    files.forEach((file) => {
-        const filePath = path.join(projectFolder, file);
-        let content = fs.readFileSync(filePath, "utf-8");
-        content = content.replace(/NAME/g, projectName);
-        content = content.replace(/PROJECTID/g, (0, guidGenerator_1.generateGUID)());
-        content = content.replace(/SOLUTIONID/g, (0, guidGenerator_1.generateGUID)());
-        fs.writeFileSync(filePath, content, "utf-8");
-    });
+function replaceIdsInSolutionFile(projectName, projectDir) {
+    const solutionFilePath = path.join(projectDir, `${projectName}.sln`);
+    let content = fs.readFileSync(solutionFilePath, "utf-8");
+    content = content.replace(/NAME/g, projectName);
+    content = content.replace(/PROJECTID/g, (0, guidGenerator_1.generateGUID)());
+    content = content.replace(/SOLUTIONID/g, (0, guidGenerator_1.generateGUID)());
+    fs.writeFileSync(solutionFilePath, content, "utf-8");
 }
 function copyFiles(workingDir, projectFolder) {
     const extensions = [

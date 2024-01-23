@@ -17,7 +17,6 @@ export function generateVSProjectFiles() {
   // Folder where the project files will be generated
   const projectDir = path.join(vscode.workspace.rootPath!, projectName);
   const projectFolder = path.join(projectDir, projectName);
-  const debugFolder = path.join(projectDir, "x64/Debug");
 
   // Create the folders
   try {
@@ -26,9 +25,6 @@ export function generateVSProjectFiles() {
 
     // Create the project folder inside the main directory
     fs.mkdirSync(projectFolder, { recursive: true });
-
-    // Create the x64/Debug folder inside the main directory
-    fs.mkdirSync(debugFolder, { recursive: true });
   } catch (error) {
     vscode.window.showErrorMessage("Error creating folders.");
     return;
@@ -43,7 +39,7 @@ export function generateVSProjectFiles() {
   }
 
   try {
-    replaceIdsInFiles(projectFolder, projectName, projectDir);
+    replaceIdsInSolutionFile(projectName, projectDir);
   } catch (error) {
     vscode.window.showErrorMessage("Error replacing IDs.");
     return;
@@ -87,21 +83,23 @@ function copyFilesRename(projectFolder: string, projectDir: string, projectName:
       fs.renameSync(path.join(projectFolder, file), path.join(projectFolder, newFileName));
     }
   });
+
+  // Rename the template.sln file
+  const oldPath = path.join(projectDir, 'template.sln');
+  const newPath = path.join(projectDir, `${projectName}.sln`);
+  fs.renameSync(oldPath, newPath);
+
 }
 
-function replaceIdsInFiles(projectFolder: string, projectName: string, projectDir: string) {
-  const files = fs.readdirSync(projectFolder);
+function replaceIdsInSolutionFile(projectName: string, projectDir: string) {
+  const solutionFilePath = path.join(projectDir, `${projectName}.sln`);
+  let content = fs.readFileSync(solutionFilePath, "utf-8");
 
-  files.forEach((file) => {
-    const filePath = path.join(projectFolder, file);
-    let content = fs.readFileSync(filePath, "utf-8");
+  content = content.replace(/NAME/g, projectName);
+  content = content.replace(/PROJECTID/g, generateGUID());
+  content = content.replace(/SOLUTIONID/g, generateGUID());
 
-    content = content.replace(/NAME/g, projectName);
-    content = content.replace(/PROJECTID/g, generateGUID());
-    content = content.replace(/SOLUTIONID/g, generateGUID());
-
-    fs.writeFileSync(filePath, content, "utf-8");
-  });
+  fs.writeFileSync(solutionFilePath, content, "utf-8");
 }
 
 function copyFiles(workingDir: string, projectFolder: string) {
