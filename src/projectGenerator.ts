@@ -3,6 +3,17 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { generateGUID } from './guidGenerator';
 
+enum FileType {
+  SOURCE,
+  TEXT,
+  HEADER,
+}
+
+interface CodeFile {
+  fileType: FileType;
+  fileName: string;
+}
+
 export function generateVSProjectFiles() {
   // Get the current project name from the workspace folder
   const projectName = vscode.workspace.name;
@@ -49,6 +60,13 @@ export function generateVSProjectFiles() {
     copyFiles(vscode.workspace.rootPath!, projectFolder);
   } catch (error) {
     vscode.window.showErrorMessage("Error copying main files.");
+    return;
+  }
+
+  try {
+    appendFileTypesToFilters(projectFolder, projectName);
+  } catch (error) {
+    vscode.window.showErrorMessage("Error appending file types to filters.");
     return;
   }
 
@@ -106,12 +124,8 @@ function copyFiles(workingDir: string, projectFolder: string) {
   const extensions = [
     ".cpp",
     ".h",
-    ".hpp",
-    ".c",
+    ".dat",
     ".txt",
-    ".md",
-    ".json",
-    ".xml",
   ];
 
   fs.readdirSync(workingDir).forEach((file) => {
@@ -124,4 +138,70 @@ function copyFiles(workingDir: string, projectFolder: string) {
       );
     }
   });
+}
+
+function getFileType(fileName: string): FileType {
+  const ext = path.extname(fileName);
+  switch (ext) {
+    case ".cpp":
+    case ".c":
+      return FileType.SOURCE;
+    case ".h":
+      return FileType.HEADER;
+    default:
+      return FileType.TEXT;
+  }
+}
+
+function appendFileTypesToFilters(projectFolder: string, projectName: string) {
+  const codeFiles: CodeFile[] = fs
+    .readdirSync(projectFolder)
+    .map((fileName) => ({
+      fileType: getFileType(fileName),
+      fileName: fileName,
+    }));
+
+  let firstPart = "";
+  // Change to the project name
+  const filters = appendSecondPartFilter(codeFiles, firstPart);
+
+  fs.appendFileSync(path.join(projectFolder, `${projectName}.vcxproj.filters`), filters);
+}
+
+function appendSecondPartFilter(codeFiles: CodeFile[], firstPart: string): string {
+  let itemGroup = "\n  <ItemGroup>";
+  let compile = itemGroup;
+  let text = itemGroup;
+  let header = itemGroup;
+
+  for (let file of codeFiles) {
+    switch (file.fileType) {
+      case FileType.SOURCE:
+        compile += `\n    <ClCompile Include="${file.fileName}">\n      <Filter>Source Files</Filter>\n    </ClCompile>`;
+        break;
+      case FileType.TEXT:
+        text += `\n    <Text Include="${file.fileName}">\n      <Filter>Source Files</Filter>\n    </Text>`;
+        break;
+      case FileType.HEADER:
+        header += `\n    <ClInclude Include="${file.fileName}">\n      <Filter>Header Files</Filter>\n    </ClInclude>`;
+        break;
+    }
+  }
+
+  if (compile !== itemGroup) {
+    compile += "\n  </ItemGroup>";
+    firstPart += compile;
+  }
+  if (text !== itemGroup) {
+    text += "\n  </ItemGroup>";
+    firstPart += text;
+  }
+  if (header !== itemGroup) {
+    header += "\n  </ItemGroup>";
+    firstPart += header;
+  }
+
+  firstPart += "\n</Project>";
+
+  return firstPart;
 }
