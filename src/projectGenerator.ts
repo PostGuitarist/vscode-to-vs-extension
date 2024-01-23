@@ -18,8 +18,6 @@ export function generateVSProjectFiles() {
   // Get the current project name from the workspace folder
   const projectName = vscode.workspace.name;
 
-  console.log(projectName);
-
   if (!projectName) {
     vscode.window.showErrorMessage("No workspace is currently open.");
     return;
@@ -144,25 +142,31 @@ function getFileType(fileName: string): FileType {
   const ext = path.extname(fileName);
   switch (ext) {
     case ".cpp":
-    case ".c":
       return FileType.SOURCE;
     case ".h":
       return FileType.HEADER;
+    case ".dat":
+    case ".txt":
     default:
       return FileType.TEXT;
   }
 }
 
 function appendFileTypesToFilters(projectFolder: string, projectName: string) {
+  const ignoreFiles = [
+    `${projectName}.vcxproj`,
+    `${projectName}.vcxproj.filters`,
+    `${projectName}.vcxproj.user`,
+  ];
   const codeFiles: CodeFile[] = fs
     .readdirSync(projectFolder)
+    .filter((fileName) => !ignoreFiles.includes(fileName))
     .map((fileName) => ({
       fileType: getFileType(fileName),
       fileName: fileName,
     }));
 
   let firstPart = "";
-  // Change to the project name
   const filters = appendSecondPartFilter(codeFiles, firstPart);
 
   fs.appendFileSync(path.join(projectFolder, `${projectName}.vcxproj.filters`), filters);
@@ -175,16 +179,18 @@ function appendSecondPartFilter(codeFiles: CodeFile[], firstPart: string): strin
   let header = itemGroup;
 
   for (let file of codeFiles) {
-    switch (file.fileType) {
-      case FileType.SOURCE:
-        compile += `\n    <ClCompile Include="${file.fileName}">\n      <Filter>Source Files</Filter>\n    </ClCompile>`;
-        break;
-      case FileType.TEXT:
-        text += `\n    <Text Include="${file.fileName}">\n      <Filter>Source Files</Filter>\n    </Text>`;
-        break;
-      case FileType.HEADER:
-        header += `\n    <ClInclude Include="${file.fileName}">\n      <Filter>Header Files</Filter>\n    </ClInclude>`;
-        break;
+    if (file) {
+      switch (file.fileType) {
+        case FileType.SOURCE:
+          compile += `\n    <ClCompile Include="${file.fileName}">\n      <Filter>Source Files</Filter>\n    </ClCompile>`;
+          break;
+        case FileType.TEXT:
+          text += `\n    <Text Include="${file.fileName}">\n      <Filter>Source Files</Filter>\n    </Text>`;
+          break;
+        case FileType.HEADER:
+          header += `\n    <ClInclude Include="${file.fileName}">\n      <Filter>Header Files</Filter>\n    </ClInclude>`;
+          break;
+      }
     }
   }
 
