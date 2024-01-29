@@ -4,18 +4,24 @@ import * as path from 'path';
 import { generateGUID } from './guidGenerator';
 import { CodeFile, FileType } from './codeFile';
 
-export function generateVSProjectFiles() {
+export async function generateVSProjectFiles() {
   // Get the current project name from the workspace folder
-  const projectName = vscode.workspace.name;
+  const inWorkspace = vscode.workspace.name;
 
-  if (!projectName) {
+  if (!inWorkspace) {
     vscode.window.showErrorMessage("No workspace is currently open.");
     return;
   }
 
+  // Get input from user for the project name
+  const newName = await vscode.window.showInputBox({
+    prompt: "Enter the project name",
+    value: vscode.workspace.name,
+  });
+
   // Folder where the project files will be generated
-  const projectDir = path.join(vscode.workspace.rootPath!, projectName);
-  const projectFolder = path.join(projectDir, projectName);
+  const projectDir = path.join(vscode.workspace.rootPath!, newName!);
+  const projectFolder = path.join(projectDir, newName!);
 
   // Create the folders
   try {
@@ -31,7 +37,7 @@ export function generateVSProjectFiles() {
 
   // Copy the template files
   try {
-    copyFilesRename(projectFolder, projectDir, projectName);
+    copyFilesRename(projectFolder, projectDir, newName!);
   } catch (error) {
     vscode.window.showErrorMessage("Error copying files.");
     return;
@@ -39,7 +45,7 @@ export function generateVSProjectFiles() {
 
   // Replace the IDs in the solution file
   try {
-    replaceIdsInSolutionFile(projectName, projectDir);
+    replaceIdsInSolutionFile(newName!, projectDir);
   } catch (error) {
     vscode.window.showErrorMessage("Error replacing IDs.");
     return;
@@ -55,7 +61,7 @@ export function generateVSProjectFiles() {
 
   // Append the file types to the filters
   try {
-    appendFileTypesToFilters(projectFolder, projectName);
+    appendFileTypesToFilters(projectFolder, newName!);
   } catch (error) {
     vscode.window.showErrorMessage("Error appending file types to filters.");
     return;

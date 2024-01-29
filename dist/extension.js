@@ -19,16 +19,21 @@ const fs = __webpack_require__(3);
 const path = __webpack_require__(4);
 const guidGenerator_1 = __webpack_require__(5);
 const codeFile_1 = __webpack_require__(6);
-function generateVSProjectFiles() {
+async function generateVSProjectFiles() {
     // Get the current project name from the workspace folder
-    const projectName = vscode.workspace.name;
-    if (!projectName) {
+    const inWorkspace = vscode.workspace.name;
+    if (!inWorkspace) {
         vscode.window.showErrorMessage("No workspace is currently open.");
         return;
     }
+    // Get input from user for the project name
+    const newName = await vscode.window.showInputBox({
+        prompt: "Enter the project name",
+        value: vscode.workspace.name,
+    });
     // Folder where the project files will be generated
-    const projectDir = path.join(vscode.workspace.rootPath, projectName);
-    const projectFolder = path.join(projectDir, projectName);
+    const projectDir = path.join(vscode.workspace.rootPath, newName);
+    const projectFolder = path.join(projectDir, newName);
     // Create the folders
     try {
         // Create the main directory folder
@@ -42,7 +47,7 @@ function generateVSProjectFiles() {
     }
     // Copy the template files
     try {
-        copyFilesRename(projectFolder, projectDir, projectName);
+        copyFilesRename(projectFolder, projectDir, newName);
     }
     catch (error) {
         vscode.window.showErrorMessage("Error copying files.");
@@ -50,7 +55,7 @@ function generateVSProjectFiles() {
     }
     // Replace the IDs in the solution file
     try {
-        replaceIdsInSolutionFile(projectName, projectDir);
+        replaceIdsInSolutionFile(newName, projectDir);
     }
     catch (error) {
         vscode.window.showErrorMessage("Error replacing IDs.");
@@ -66,7 +71,7 @@ function generateVSProjectFiles() {
     }
     // Append the file types to the filters
     try {
-        appendFileTypesToFilters(projectFolder, projectName);
+        appendFileTypesToFilters(projectFolder, newName);
     }
     catch (error) {
         vscode.window.showErrorMessage("Error appending file types to filters.");
