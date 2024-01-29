@@ -48,6 +48,7 @@ function generateVSProjectFiles() {
         vscode.window.showErrorMessage("Error copying files.");
         return;
     }
+    // Replace the IDs in the solution file
     try {
         replaceIdsInSolutionFile(projectName, projectDir);
     }
@@ -55,6 +56,7 @@ function generateVSProjectFiles() {
         vscode.window.showErrorMessage("Error replacing IDs.");
         return;
     }
+    // Copy the main files
     try {
         copyFiles(vscode.workspace.rootPath, projectFolder);
     }
@@ -62,6 +64,7 @@ function generateVSProjectFiles() {
         vscode.window.showErrorMessage("Error copying main files.");
         return;
     }
+    // Append the file types to the filters
     try {
         appendFileTypesToFilters(projectFolder, projectName);
     }

@@ -37,6 +37,7 @@ export function generateVSProjectFiles() {
     return;
   }
 
+  // Replace the IDs in the solution file
   try {
     replaceIdsInSolutionFile(projectName, projectDir);
   } catch (error) {
@@ -44,6 +45,7 @@ export function generateVSProjectFiles() {
     return;
   }
 
+  // Copy the main files
   try {
     copyFiles(vscode.workspace.rootPath!, projectFolder);
   } catch (error) {
@@ -51,6 +53,7 @@ export function generateVSProjectFiles() {
     return;
   }
 
+  // Append the file types to the filters
   try {
     appendFileTypesToFilters(projectFolder, projectName);
   } catch (error) {
