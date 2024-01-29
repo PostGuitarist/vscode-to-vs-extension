@@ -2,17 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import { generateGUID } from './guidGenerator';
-
-enum FileType {
-  SOURCE,
-  TEXT,
-  HEADER,
-}
-
-interface CodeFile {
-  fileType: FileType;
-  fileName: string;
-}
+import { CodeFile, FileType } from './codeFile';
 
 export function generateVSProjectFiles() {
   // Get the current project name from the workspace folder
