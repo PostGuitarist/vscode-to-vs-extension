@@ -6,10 +6,10 @@ This extension was also made with permission from [wzid](https://github.com/wzid
 
 ## **Installation**
 - Download the .vsix from the Releases page
-- Open the **Extensions** tab in VSCode, and click **Install from VSIX**
-- **OR**
+- Open the **Extensions** tab in VSCode, click the three small dots at the top, and click **Install from VSIX**
+**OR**
 - Open the **Command Palette** and enter **Extensions: Install from VSIX**
-- **OR**
+**OR**
 - Run the command
   ```
   code --install-extension vscode-to-vs-1.0.0.vsix
