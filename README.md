@@ -12,7 +12,7 @@ This extension was also made with permission from [wzid](https://github.com/wzid
 **OR**
 - Run the command
   ```
-  code --install-extension vscode-to-vs-1.0.0.vsix
+  code --install-extension vscode-to-vs-1.1.0.vsix
   ```
 
 ## **Future**

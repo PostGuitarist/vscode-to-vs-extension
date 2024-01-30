@@ -4,6 +4,11 @@ All notable changes to the "vscode-to-vs" extension will be documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [1.0.0] - 2024-01-23
+## [1.1.0] - 2024-01-29
+- Add: Support for custom name for project and solution
+- Refactor: Move enum and interface to separate file
+- Add: Test for GUID generation
 
+
+## [1.0.0] - 2024-01-23
 - Initial release
