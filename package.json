@@ -1,12 +1,12 @@
 {
   "name": "vscode-to-vs",
-  "displayName": "vscode-to-vs",
+  "displayName": "VSCode to Visual Studio",
   "publisher": "ZadenConnell",
-  "description": "Creates solution files for a Visual Studio C++ project with just source files",
+  "description": "Creates solution files for a Visual Studio C++ project with just source files.",
   "author": {
     "name": "Zaden Connell"
   },
-  "version": "1.1.0",
+  "version": "1.1.1",
   "engines": {
     "vscode": "^1.82.0"
   },
@@ -15,10 +15,29 @@
   ],
   "icon": "images/vsicon.png",
   "pricing": "Free",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/PostGuitarist/vscode-to-vs-extension.git"
   },
+  "bugs": {
+    "url": "https://github.com/PostGuitarist/vscode-to-vs-extension/issues"
+  },
+  "keywords": [
+    "vscode",
+    "vs",
+    "visual",
+    "studio",
+    "code",
+    "cpp",
+    "c++",
+    "solution",
+    "project",
+    "files",
+    "generate",
+    "create",
+    "extension"
+  ],
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
