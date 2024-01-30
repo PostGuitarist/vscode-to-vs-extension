@@ -1,7 +1,7 @@
 {
   "name": "vscode-to-vs",
   "displayName": "VSCode to Visual Studio",
-  "publisher": "ZadenConnell",
+  "publisher": "PostGuitarist",
   "description": "Creates solution files for a Visual Studio C++ project with just source files.",
   "author": {
     "name": "Zaden Connell"
