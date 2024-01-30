@@ -13,6 +13,7 @@
   "categories": [
     "Other"
   ],
+  "icon": "images/vsicon.png",
   "pricing": "Free",
   "repository": {
     "type": "git",
