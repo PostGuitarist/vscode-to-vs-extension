@@ -6,5 +6,5 @@ This extension was also made with permission from [wzid](https://github.com/wzid
 
 ## **Usage**
 1. Open the command palette `[Ctrl+Shift+P]` or `[Cmd+Shift+P]`
-2. Type in `>Generate C++ Solution Files`
+2. Type in `Generate C++ Solution Files`
 3. Enter the name of the project when prompted
