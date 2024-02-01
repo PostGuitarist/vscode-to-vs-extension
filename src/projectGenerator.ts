@@ -114,8 +114,6 @@ function replaceIdsInSolutionFile(projectName: string, projectDir: string) {
   content = content.replace(/PROJECTID/g, generateGUID());
   content = content.replace(/SOLUTIONID/g, generateGUID());
 
-  console.log(generateGUID());
-
   fs.writeFileSync(solutionFilePath, content, "utf-8");
 }
 
