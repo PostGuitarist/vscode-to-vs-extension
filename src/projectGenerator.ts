@@ -135,6 +135,15 @@ function copyFiles(workingDir: string, projectFolder: string) {
       );
     }
   });
+
+  // Delete the original files
+  fs.readdirSync(workingDir).forEach((file) => {
+    const ext = path.extname(file);
+
+    if (extensions.includes(ext)) {
+      fs.unlinkSync(path.join (workingDir, file));
+    }
+  });
 }
 
 function getFileType(fileName: string): FileType {
