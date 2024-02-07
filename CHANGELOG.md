@@ -4,6 +4,9 @@ All notable changes to the "vscode-to-vs" extension will be documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.2.0] - 2024-02-06
+- Add: Delete old files after copying to new location
+
 ## [1.1.2] - 2024-01-31
 - Fix: Fix other issue with GUID generation
 
