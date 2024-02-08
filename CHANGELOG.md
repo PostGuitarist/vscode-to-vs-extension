@@ -2,7 +2,7 @@
 
 All notable changes to the "vscode-to-vs" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+This is based off of [Keep a Changelog](http://keepachangelog.com/).
 
 ## [1.2.0] - 2024-02-06
 - Add: Delete old files after copying to new location
