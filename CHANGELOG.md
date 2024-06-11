@@ -2,7 +2,7 @@
 
 All notable changes to the "vscode-to-vs" extension will be documented in this file.
 
-This is based on [Keep a](http://keepachangelog.com/) Changelog](http://keepachangelog.com/).
+This is based on [Keep a Changelog](http://keepachangelog.com/) 
 
 ## [1.2.1] - 2024-02-06
 - Update: Update dependencies
