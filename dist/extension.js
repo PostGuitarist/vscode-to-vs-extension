@@ -104,7 +104,12 @@ async function generateVSProjectFiles() {
         value: vscode.workspace.name,
     });
     // Folder where the project files will be generated
-    const projectDir = path.join(vscode.workspace.rootPath, newName);
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+    if (!workspaceFolder) {
+        vscode.window.showErrorMessage("No workspace folder found.");
+        return;
+    }
+    const projectDir = path.join(workspaceFolder, newName);
     const projectFolder = path.join(projectDir, newName);
     // Create the folders
     try {
@@ -114,7 +119,7 @@ async function generateVSProjectFiles() {
         fs.mkdirSync(projectFolder, { recursive: true });
     }
     catch (error) {
-        vscode.window.showErrorMessage("Error creating folders.");
+        vscode.window.showErrorMessage(`Error creating folders: `);
         return;
     }
     // Copy the template files
@@ -122,31 +127,47 @@ async function generateVSProjectFiles() {
         copyFilesRename(projectFolder, projectDir, newName);
     }
     catch (error) {
-        vscode.window.showErrorMessage("Error copying files.");
-        return;
+        if (error instanceof Error) {
+            // Is this the best way to handle this error? Probably not.
+            if (!error.message.includes("EPERM")) {
+                vscode.window.showErrorMessage(`Error copying files: ${error}`);
+                return;
+            }
+            else {
+                return;
+            }
+        }
     }
     // Replace the IDs in the solution file
     try {
         replaceIdsInSolutionFile(newName, projectDir);
     }
     catch (error) {
-        vscode.window.showErrorMessage("Error replacing IDs.");
+        vscode.window.showErrorMessage(`Error replacing IDs: ${error}`);
         return;
     }
     // Copy the main files
     try {
-        copyFiles(vscode.workspace.rootPath, projectFolder);
+        copyFiles(workspaceFolder, projectFolder);
     }
     catch (error) {
-        vscode.window.showErrorMessage("Error copying main files.");
-        return;
+        if (error instanceof Error) {
+            // Is this the best way to handle this error? Probably not.
+            if (!error.message.includes("EPERM")) {
+                vscode.window.showErrorMessage(`Error copying main files: ${error}`);
+                return;
+            }
+            else {
+                return;
+            }
+        }
     }
     // Append the file types to the filters
     try {
         appendFileTypesToFilters(projectFolder, newName);
     }
     catch (error) {
-        vscode.window.showErrorMessage("Error appending file types to filters.");
+        vscode.window.showErrorMessage(`Error appending file types to filters: ${error}`);
         return;
     }
     vscode.window.showInformationMessage("Visual Studio project files generated successfully");
@@ -194,6 +215,13 @@ function copyFiles(workingDir, projectFolder) {
     fs.readdirSync(workingDir).forEach((file) => {
         const ext = path.extname(file);
         if (extensions.includes(ext)) {
+            fs.unlinkSync(path.join(workingDir, file));
+        }
+    });
+    // Delete the compiled files
+    fs.readdirSync(workingDir).forEach((file) => {
+        const ext = path.extname(file);
+        if (ext === ".exe" || ext === ".obj" || ext === "") {
             fs.unlinkSync(path.join(workingDir, file));
         }
     });
