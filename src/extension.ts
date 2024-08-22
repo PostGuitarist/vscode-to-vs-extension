@@ -2,20 +2,19 @@ import * as vscode from 'vscode';
 import { generateVSProjectFiles } from './projectGenerator';
 
 export function activate(context: vscode.ExtensionContext) {
-	// Register the command
-    let disposable = vscode.commands.registerCommand('extension.generateCppSolution', async () => {
-        try {
-            // Run the generateSolutionFiles function
-            generateVSProjectFiles();
-        } catch (error) {
-			// Show an error message
-            vscode.window.showErrorMessage(`Error executing: ${error}`);
-        }
-    });
+	console.log('Extension "vscode-to-vs" is now active!');
 
 	// Register the command
-    context.subscriptions.push(disposable);
+	const disposable = vscode.commands.registerCommand('vscode-to-vs.generateCppSolution', async () => {
+		try {
+			generateVSProjectFiles();
+		} catch (error) {
+			vscode.window.showErrorMessage(`Error generating project files: ${error}`);
+		}
+	});
+
+	context.subscriptions.push(disposable);
 }
 
-// this method is called when your extension is deactivated
+// Called when extension is deactivated
 export function deactivate() {}

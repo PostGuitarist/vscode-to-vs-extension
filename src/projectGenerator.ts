@@ -1,8 +1,8 @@
-import * as vscode from 'vscode';
-import * as fs from 'fs';
-import * as path from 'path';
-import { generateGUID } from './guidGenerator';
-import { CodeFile, FileType } from './codeFile';
+import * as vscode from "vscode";
+import * as fs from "fs";
+import * as path from "path";
+import { generateGUID } from "./guidGenerator";
+import { CodeFile, FileType } from "./codeFile";
 
 export async function generateVSProjectFiles() {
   // Get the current project name from the workspace folder
@@ -20,7 +20,12 @@ export async function generateVSProjectFiles() {
   });
 
   // Folder where the project files will be generated
-  const projectDir = path.join(vscode.workspace.rootPath!, newName!);
+  const workspaceFolder = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+  if (!workspaceFolder) {
+    vscode.window.showErrorMessage("No workspace folder found.");
+    return;
+  }
+  const projectDir = path.join(workspaceFolder, newName!);
   const projectFolder = path.join(projectDir, newName!);
 
   // Create the folders
@@ -31,7 +36,7 @@ export async function generateVSProjectFiles() {
     // Create the project folder inside the main directory
     fs.mkdirSync(projectFolder, { recursive: true });
   } catch (error) {
-    vscode.window.showErrorMessage("Error creating folders.");
+    vscode.window.showErrorMessage(`Error creating folders: `);
     return;
   }
 
@@ -39,31 +44,49 @@ export async function generateVSProjectFiles() {
   try {
     copyFilesRename(projectFolder, projectDir, newName!);
   } catch (error) {
-    vscode.window.showErrorMessage("Error copying files.");
-    return;
+    if (error instanceof Error) {
+
+      // Is this the best way to handle this error? Probably not.
+
+      if (!error.message.includes("EPERM")) {
+        vscode.window.showErrorMessage(`Error copying files: ${error}`);
+        return;
+      } else {
+        return;
+      }
+    }
   }
 
   // Replace the IDs in the solution file
   try {
     replaceIdsInSolutionFile(newName!, projectDir);
   } catch (error) {
-    vscode.window.showErrorMessage("Error replacing IDs.");
+    vscode.window.showErrorMessage(`Error replacing IDs: ${error}`);
     return;
   }
 
   // Copy the main files
   try {
-    copyFiles(vscode.workspace.rootPath!, projectFolder);
+    copyFiles(workspaceFolder, projectFolder);
   } catch (error) {
-    vscode.window.showErrorMessage("Error copying main files.");
-    return;
+    if (error instanceof Error) {
+
+      // Is this the best way to handle this error? Probably not.
+
+      if (!error.message.includes("EPERM")) {
+        vscode.window.showErrorMessage(`Error copying main files: ${error}`);
+        return;
+      } else {
+        return;
+      }
+    }
   }
 
   // Append the file types to the filters
   try {
     appendFileTypesToFilters(projectFolder, newName!);
   } catch (error) {
-    vscode.window.showErrorMessage("Error appending file types to filters.");
+    vscode.window.showErrorMessage(`Error appending file types to filters: ${error}`);
     return;
   }
 
@@ -72,7 +95,11 @@ export async function generateVSProjectFiles() {
   );
 }
 
-function copyFilesRename(projectFolder: string, projectDir: string, projectName: string) {
+function copyFilesRename(
+  projectFolder: string,
+  projectDir: string,
+  projectName: string
+) {
   // Copy the template files
   const templateDir = path.join(__dirname, "assets");
   fs.readdirSync(templateDir).forEach((file) => {
@@ -92,18 +119,20 @@ function copyFilesRename(projectFolder: string, projectDir: string, projectName:
   );
 
   // Rename the template files
-  fs.readdirSync(projectFolder).forEach(file => {
-    if (file.startsWith('template.')) {
-      const newFileName = file.replace('template', projectName);
-      fs.renameSync(path.join(projectFolder, file), path.join(projectFolder, newFileName));
+  fs.readdirSync(projectFolder).forEach((file) => {
+    if (file.startsWith("template.")) {
+      const newFileName = file.replace("template", projectName);
+      fs.renameSync(
+        path.join(projectFolder, file),
+        path.join(projectFolder, newFileName)
+      );
     }
   });
 
   // Rename the template.sln file
-  const oldPath = path.join(projectDir, 'template.sln');
+  const oldPath = path.join(projectDir, "template.sln");
   const newPath = path.join(projectDir, `${projectName}.sln`);
   fs.renameSync(oldPath, newPath);
-
 }
 
 function replaceIdsInSolutionFile(projectName: string, projectDir: string) {
@@ -118,12 +147,7 @@ function replaceIdsInSolutionFile(projectName: string, projectDir: string) {
 }
 
 function copyFiles(workingDir: string, projectFolder: string) {
-  const extensions = [
-    ".cpp",
-    ".h",
-    ".dat",
-    ".txt",
-  ];
+  const extensions = [".cpp", ".h", ".dat", ".txt"];
 
   fs.readdirSync(workingDir).forEach((file) => {
     const ext = path.extname(file);
@@ -141,7 +165,16 @@ function copyFiles(workingDir: string, projectFolder: string) {
     const ext = path.extname(file);
 
     if (extensions.includes(ext)) {
-      fs.unlinkSync(path.join (workingDir, file));
+      fs.unlinkSync(path.join(workingDir, file));
+    }
+  });
+
+  // Delete the compiled files
+  fs.readdirSync(workingDir).forEach((file) => {
+    const ext = path.extname(file);
+
+    if (ext === ".exe" || ext === ".obj" || ext === "") {
+      fs.unlinkSync(path.join(workingDir, file));
     }
   });
 }
@@ -178,11 +211,20 @@ function appendFileTypesToFilters(projectFolder: string, projectName: string) {
   const filters = appendSecondPartFilter(codeFiles, firstPart);
   const vcxproj = appendSecondPartVcxproj(codeFiles, firstPart);
 
-  fs.appendFileSync(path.join(projectFolder, `${projectName}.vcxproj.filters`), filters);
-  fs.appendFileSync(path.join(projectFolder, `${projectName}.vcxproj`), vcxproj);
+  fs.appendFileSync(
+    path.join(projectFolder, `${projectName}.vcxproj.filters`),
+    filters
+  );
+  fs.appendFileSync(
+    path.join(projectFolder, `${projectName}.vcxproj`),
+    vcxproj
+  );
 }
 
-function appendSecondPartFilter(codeFiles: CodeFile[], firstPart: string): string {
+function appendSecondPartFilter(
+  codeFiles: CodeFile[],
+  firstPart: string
+): string {
   let itemGroup = "\n  <ItemGroup>";
   let compile = itemGroup;
   let text = itemGroup;
@@ -222,7 +264,10 @@ function appendSecondPartFilter(codeFiles: CodeFile[], firstPart: string): strin
   return firstPart;
 }
 
-function appendSecondPartVcxproj(codeFiles: CodeFile[], firstPart: string): string {
+function appendSecondPartVcxproj(
+  codeFiles: CodeFile[],
+  firstPart: string
+): string {
   let itemGroup = "\n  <ItemGroup>";
   let compile = itemGroup;
   let text = itemGroup;
@@ -259,7 +304,8 @@ function appendSecondPartVcxproj(codeFiles: CodeFile[], firstPart: string): stri
     firstPart += header;
   }
 
-  firstPart += "\n  <Import Project=\"$(VCTargetsPath)\\Microsoft.Cpp.targets\" />\n  <ImportGroup Label=\"ExtensionTargets\">\n  </ImportGroup>\n</Project>";
+  firstPart +=
+    '\n  <Import Project="$(VCTargetsPath)\\Microsoft.Cpp.targets" />\n  <ImportGroup Label="ExtensionTargets">\n  </ImportGroup>\n</Project>';
 
   return firstPart;
 }
