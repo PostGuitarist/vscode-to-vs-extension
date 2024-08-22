@@ -1,8 +1,8 @@
-import * as vscode from 'vscode';
-import * as fs from 'fs';
-import * as path from 'path';
-import { generateGUID } from './guidGenerator';
-import { CodeFile, FileType } from './codeFile';
+import * as vscode from "vscode";
+import * as fs from "fs";
+import * as path from "path";
+import { generateGUID } from "./guidGenerator";
+import { CodeFile, FileType } from "./codeFile";
 
 export async function generateVSProjectFiles() {
   // Get the current project name from the workspace folder
@@ -72,7 +72,11 @@ export async function generateVSProjectFiles() {
   );
 }
 
-function copyFilesRename(projectFolder: string, projectDir: string, projectName: string) {
+function copyFilesRename(
+  projectFolder: string,
+  projectDir: string,
+  projectName: string
+) {
   // Copy the template files
   const templateDir = path.join(__dirname, "assets");
   fs.readdirSync(templateDir).forEach((file) => {
@@ -92,18 +96,20 @@ function copyFilesRename(projectFolder: string, projectDir: string, projectName:
   );
 
   // Rename the template files
-  fs.readdirSync(projectFolder).forEach(file => {
-    if (file.startsWith('template.')) {
-      const newFileName = file.replace('template', projectName);
-      fs.renameSync(path.join(projectFolder, file), path.join(projectFolder, newFileName));
+  fs.readdirSync(projectFolder).forEach((file) => {
+    if (file.startsWith("template.")) {
+      const newFileName = file.replace("template", projectName);
+      fs.renameSync(
+        path.join(projectFolder, file),
+        path.join(projectFolder, newFileName)
+      );
     }
   });
 
   // Rename the template.sln file
-  const oldPath = path.join(projectDir, 'template.sln');
+  const oldPath = path.join(projectDir, "template.sln");
   const newPath = path.join(projectDir, `${projectName}.sln`);
   fs.renameSync(oldPath, newPath);
-
 }
 
 function replaceIdsInSolutionFile(projectName: string, projectDir: string) {
@@ -118,12 +124,7 @@ function replaceIdsInSolutionFile(projectName: string, projectDir: string) {
 }
 
 function copyFiles(workingDir: string, projectFolder: string) {
-  const extensions = [
-    ".cpp",
-    ".h",
-    ".dat",
-    ".txt",
-  ];
+  const extensions = [".cpp", ".h", ".dat", ".txt"];
 
   fs.readdirSync(workingDir).forEach((file) => {
     const ext = path.extname(file);
@@ -141,7 +142,7 @@ function copyFiles(workingDir: string, projectFolder: string) {
     const ext = path.extname(file);
 
     if (extensions.includes(ext)) {
-      fs.unlinkSync(path.join (workingDir, file));
+      fs.unlinkSync(path.join(workingDir, file));
     }
   });
 }
@@ -178,11 +179,20 @@ function appendFileTypesToFilters(projectFolder: string, projectName: string) {
   const filters = appendSecondPartFilter(codeFiles, firstPart);
   const vcxproj = appendSecondPartVcxproj(codeFiles, firstPart);
 
-  fs.appendFileSync(path.join(projectFolder, `${projectName}.vcxproj.filters`), filters);
-  fs.appendFileSync(path.join(projectFolder, `${projectName}.vcxproj`), vcxproj);
+  fs.appendFileSync(
+    path.join(projectFolder, `${projectName}.vcxproj.filters`),
+    filters
+  );
+  fs.appendFileSync(
+    path.join(projectFolder, `${projectName}.vcxproj`),
+    vcxproj
+  );
 }
 
-function appendSecondPartFilter(codeFiles: CodeFile[], firstPart: string): string {
+function appendSecondPartFilter(
+  codeFiles: CodeFile[],
+  firstPart: string
+): string {
   let itemGroup = "\n  <ItemGroup>";
   let compile = itemGroup;
   let text = itemGroup;
@@ -222,7 +232,10 @@ function appendSecondPartFilter(codeFiles: CodeFile[], firstPart: string): strin
   return firstPart;
 }
 
-function appendSecondPartVcxproj(codeFiles: CodeFile[], firstPart: string): string {
+function appendSecondPartVcxproj(
+  codeFiles: CodeFile[],
+  firstPart: string
+): string {
   let itemGroup = "\n  <ItemGroup>";
   let compile = itemGroup;
   let text = itemGroup;
@@ -259,7 +272,8 @@ function appendSecondPartVcxproj(codeFiles: CodeFile[], firstPart: string): stri
     firstPart += header;
   }
 
-  firstPart += "\n  <Import Project=\"$(VCTargetsPath)\\Microsoft.Cpp.targets\" />\n  <ImportGroup Label=\"ExtensionTargets\">\n  </ImportGroup>\n</Project>";
+  firstPart +=
+    '\n  <Import Project="$(VCTargetsPath)\\Microsoft.Cpp.targets" />\n  <ImportGroup Label="ExtensionTargets">\n  </ImportGroup>\n</Project>';
 
   return firstPart;
 }
