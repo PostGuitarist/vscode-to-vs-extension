@@ -1,1 +1,491 @@
-(()=>{"use strict";var e={81:(e,r)=>{var t;Object.defineProperty(r,"__esModule",{value:!0}),r.FileType=void 0,function(e){e[e.SOURCE=0]="SOURCE",e[e.TEXT=1]="TEXT",e[e.HEADER=2]="HEADER"}(t||(r.FileType=t={}))},265:function(e,r,t){var n=this&&this.__createBinding||(Object.create?function(e,r,t,n){void 0===n&&(n=t);var o=Object.getOwnPropertyDescriptor(r,t);o&&!("get"in o?!r.__esModule:o.writable||o.configurable)||(o={enumerable:!0,get:function(){return r[t]}}),Object.defineProperty(e,n,o)}:function(e,r,t,n){void 0===n&&(n=t),e[n]=r[t]}),o=this&&this.__setModuleDefault||(Object.create?function(e,r){Object.defineProperty(e,"default",{enumerable:!0,value:r})}:function(e,r){e.default=r}),i=this&&this.__importStar||function(e){if(e&&e.__esModule)return e;var r={};if(null!=e)for(var t in e)"default"!==t&&Object.prototype.hasOwnProperty.call(e,t)&&n(r,e,t);return o(r,e),r};Object.defineProperty(r,"__esModule",{value:!0}),r.activate=function(e){console.log('Extension "vscode-to-vs" is now active!');const r=c.commands.registerCommand("vscode-to-vs.generateCppSolution",(async()=>{try{(0,s.generateVSProjectFiles)()}catch(e){c.window.showErrorMessage(`Error generating project files: ${e}`)}}));e.subscriptions.push(r)},r.deactivate=function(){};const c=i(t(398)),s=t(984)},870:(e,r)=>{Object.defineProperty(r,"__esModule",{value:!0}),r.generateGUID=function(){return"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,(function(e){const r=16*Math.random()|0;return("x"===e?r:3&r|8).toString(16)}))}},984:function(e,r,t){var n=this&&this.__createBinding||(Object.create?function(e,r,t,n){void 0===n&&(n=t);var o=Object.getOwnPropertyDescriptor(r,t);o&&!("get"in o?!r.__esModule:o.writable||o.configurable)||(o={enumerable:!0,get:function(){return r[t]}}),Object.defineProperty(e,n,o)}:function(e,r,t,n){void 0===n&&(n=t),e[n]=r[t]}),o=this&&this.__setModuleDefault||(Object.create?function(e,r){Object.defineProperty(e,"default",{enumerable:!0,value:r})}:function(e,r){e.default=r}),i=this&&this.__importStar||function(e){if(e&&e.__esModule)return e;var r={};if(null!=e)for(var t in e)"default"!==t&&Object.prototype.hasOwnProperty.call(e,t)&&n(r,e,t);return o(r,e),r};Object.defineProperty(r,"__esModule",{value:!0}),r.generateVSProjectFiles=async function(){if(!c.workspace.name)return void c.window.showErrorMessage("No workspace is currently open.");const e=await c.window.showInputBox({prompt:"Enter the project name",value:c.workspace.name}),r=c.workspace.workspaceFolders?.[0].uri.fsPath;if(!r)return void c.window.showErrorMessage("No workspace folder found.");const t=a.join(r,e),n=a.join(t,e);try{s.mkdirSync(t,{recursive:!0}),s.mkdirSync(n,{recursive:!0})}catch(e){return void c.window.showErrorMessage("Error creating folders: ")}try{!function(e,r,t){const n=a.join(__dirname,"assets");s.readdirSync(n).forEach((r=>{"template.sln"!==r&&r.startsWith("template.")&&s.copyFileSync(a.join(n,r),a.join(e,r))}));const o="template.sln";s.copyFileSync(a.join(n,o),a.join(r,o)),s.readdirSync(e).forEach((r=>{if(r.startsWith("template.")){const n=r.replace("template",t);s.renameSync(a.join(e,r),a.join(e,n))}}));const i=a.join(r,"template.sln"),c=a.join(r,`${t}.sln`);s.renameSync(i,c)}(n,t,e)}catch(e){if(e instanceof Error)return e.message.includes("EPERM")?void 0:void c.window.showErrorMessage(`Error copying files: ${e}`)}try{!function(e,r){const t=a.join(r,`${e}.sln`);let n=s.readFileSync(t,"utf-8");n=n.replace(/NAME/g,e),n=n.replace(/PROJECTID/g,(0,l.generateGUID)()),n=n.replace(/SOLUTIONID/g,(0,l.generateGUID)()),s.writeFileSync(t,n,"utf-8")}(e,t)}catch(e){return void c.window.showErrorMessage(`Error replacing IDs: ${e}`)}try{!function(e,r){const t=[".cpp",".h",".dat",".txt"];s.readdirSync(e).forEach((n=>{const o=a.extname(n);t.includes(o)&&s.copyFileSync(a.join(e,n),a.join(r,n))})),s.readdirSync(e).forEach((r=>{const n=a.extname(r);t.includes(n)&&s.unlinkSync(a.join(e,r))})),s.readdirSync(e).forEach((r=>{const t=a.extname(r);".exe"!==t&&".obj"!==t&&""!==t||s.unlinkSync(a.join(e,r))}))}(r,n)}catch(e){if(e instanceof Error)return e.message.includes("EPERM")?void 0:void c.window.showErrorMessage(`Error copying main files: ${e}`)}try{!function(e,r){const t=[`${r}.vcxproj`,`${r}.vcxproj.filters`,`${r}.vcxproj.user`],n=s.readdirSync(e).filter((e=>!t.includes(e))).map((e=>({fileType:p(e),fileName:e})));const o=function(e,r){let t="\n  <ItemGroup>",n=t,o=t,i=t;for(let r of e)if(r)switch(r.fileType){case u.FileType.SOURCE:n+=`\n    <ClCompile Include="${r.fileName}">\n      <Filter>Source Files</Filter>\n    </ClCompile>`;break;case u.FileType.TEXT:o+=`\n    <Text Include="${r.fileName}">\n      <Filter>Source Files</Filter>\n    </Text>`;break;case u.FileType.HEADER:i+=`\n    <ClInclude Include="${r.fileName}">\n      <Filter>Header Files</Filter>\n    </ClInclude>`}return n!==t&&(n+="\n  </ItemGroup>",r+=n),o!==t&&(o+="\n  </ItemGroup>",r+=o),i!==t&&(i+="\n  </ItemGroup>",r+=i),r+="\n</Project>"}(n,""),i=function(e,r){let t="\n  <ItemGroup>",n=t,o=t,i=t;for(let r of e)if(r)switch(r.fileType){case u.FileType.SOURCE:n+=`\n    <ClCompile Include="${r.fileName}" />`;break;case u.FileType.TEXT:o+=`\n    <Text Include="${r.fileName}" />`;break;case u.FileType.HEADER:i+=`\n    <ClInclude Include="${r.fileName}" />`}return n!==t&&(n+="\n  </ItemGroup>",r+=n),o!==t&&(o+="\n  </ItemGroup>",r+=o),i!==t&&(i+="\n  </ItemGroup>",r+=i),r+='\n  <Import Project="$(VCTargetsPath)\\Microsoft.Cpp.targets" />\n  <ImportGroup Label="ExtensionTargets">\n  </ImportGroup>\n</Project>'}(n,"");s.appendFileSync(a.join(e,`${r}.vcxproj.filters`),o),s.appendFileSync(a.join(e,`${r}.vcxproj`),i)}(n,e)}catch(e){return void c.window.showErrorMessage(`Error appending file types to filters: ${e}`)}c.window.showInformationMessage("Visual Studio project files generated successfully")};const c=i(t(398)),s=i(t(896)),a=i(t(928)),l=t(870),u=t(81);function p(e){switch(a.extname(e)){case".cpp":return u.FileType.SOURCE;case".h":return u.FileType.HEADER;default:return u.FileType.TEXT}}},398:e=>{e.exports=require("vscode")},896:e=>{e.exports=require("fs")},928:e=>{e.exports=require("path")}},r={},t=function t(n){var o=r[n];if(void 0!==o)return o.exports;var i=r[n]={exports:{}};return e[n].call(i.exports,i,i.exports,t),i.exports}(265);module.exports=t})();
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ([
+/* 0 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.activate = activate;
+exports.deactivate = deactivate;
+const vscode = __importStar(__webpack_require__(1));
+const projectGenerator_1 = __webpack_require__(2);
+function activate(context) {
+    console.log('Extension "vscode-to-vs" is now active!');
+    // Register the command
+    const disposable = vscode.commands.registerCommand('vscode-to-vs.generateCppSolution', async () => {
+        try {
+            (0, projectGenerator_1.generateVSProjectFiles)();
+        }
+        catch (error) {
+            vscode.window.showErrorMessage(`Error generating project files: ${error}`);
+        }
+    });
+    context.subscriptions.push(disposable);
+}
+// Called when extension is deactivated
+function deactivate() { }
+
+
+/***/ }),
+/* 1 */
+/***/ ((module) => {
+
+module.exports = require("vscode");
+
+/***/ }),
+/* 2 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.generateVSProjectFiles = generateVSProjectFiles;
+const vscode = __importStar(__webpack_require__(1));
+const path = __importStar(__webpack_require__(3));
+const fs = __importStar(__webpack_require__(4));
+const helpers_1 = __webpack_require__(5);
+const appendHelpers_1 = __webpack_require__(7);
+async function generateVSProjectFiles() {
+    // Get the current project name from the workspace folder
+    const inWorkspace = vscode.workspace.name;
+    if (!inWorkspace) {
+        vscode.window.showErrorMessage("No workspace is currently open.");
+        return;
+    }
+    // Get input from user for the project name
+    const newName = await vscode.window.showInputBox({
+        prompt: "Enter the project name",
+        value: vscode.workspace.name,
+    });
+    // Folder where the project files will be generated
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+    if (!workspaceFolder) {
+        vscode.window.showErrorMessage("No workspace folder found.");
+        return;
+    }
+    const projectDir = path.join(workspaceFolder, newName);
+    const projectFolder = path.join(projectDir, newName);
+    // Create the folders
+    try {
+        // Create the main directory folder
+        fs.mkdirSync(projectDir, { recursive: true });
+        // Create the project folder inside the main directory
+        fs.mkdirSync(projectFolder, { recursive: true });
+    }
+    catch (error) {
+        vscode.window.showErrorMessage(`Error creating folders: `);
+        return;
+    }
+    // Copy the template files
+    try {
+        (0, helpers_1.copyTemplateFiles)(projectFolder, projectDir, newName);
+    }
+    catch (error) {
+        if (error instanceof Error) {
+            if (!error.message.includes("EPERM")) {
+                vscode.window.showErrorMessage(`Error copying files: ${error}`);
+                return;
+            }
+            else {
+                return;
+            }
+        }
+    }
+    // Replace the IDs in the solution file
+    try {
+        (0, helpers_1.replaceIdsInSolutionFile)(newName, projectDir);
+    }
+    catch (error) {
+        vscode.window.showErrorMessage(`Error replacing IDs: ${error}`);
+        return;
+    }
+    // Copy the main files
+    try {
+        (0, helpers_1.copyFiles)(workspaceFolder, projectFolder);
+    }
+    catch (error) {
+        if (error instanceof Error) {
+            // Is this the best way to handle this error? Probably not.
+            if (!error.message.includes("EPERM")) {
+                vscode.window.showErrorMessage(`Error copying main files: ${error}`);
+                return;
+            }
+            else {
+                return;
+            }
+        }
+    }
+    // Append the file types to the filters
+    try {
+        (0, appendHelpers_1.appendFileTypesToFilters)(projectFolder, newName);
+    }
+    catch (error) {
+        vscode.window.showErrorMessage(`Error appending file types to filters: ${error}`);
+        return;
+    }
+    vscode.window.showInformationMessage("Visual Studio project files generated successfully");
+}
+
+
+/***/ }),
+/* 3 */
+/***/ ((module) => {
+
+module.exports = require("path");
+
+/***/ }),
+/* 4 */
+/***/ ((module) => {
+
+module.exports = require("fs");
+
+/***/ }),
+/* 5 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.copyTemplateFiles = copyTemplateFiles;
+exports.copyFiles = copyFiles;
+exports.replaceIdsInSolutionFile = replaceIdsInSolutionFile;
+const path_1 = __importDefault(__webpack_require__(3));
+const fs = __importStar(__webpack_require__(4));
+const guidGenerator_1 = __webpack_require__(6);
+function copyTemplateFiles(projectFolder, projectDir, projectName) {
+    // Copy the template files
+    const templateDir = path_1.default.join(__dirname, "assets");
+    fs.readdirSync(templateDir).forEach((file) => {
+        if (file !== "template.sln" && file.startsWith("template.")) {
+            fs.copyFileSync(path_1.default.join(templateDir, file), path_1.default.join(projectFolder, file));
+        }
+    });
+    // Copy the template.sln file to the projectDir
+    const slnFile = "template.sln";
+    fs.copyFileSync(path_1.default.join(templateDir, slnFile), path_1.default.join(projectDir, slnFile));
+    // Rename the template files
+    fs.readdirSync(projectFolder).forEach((file) => {
+        if (file.startsWith("template.")) {
+            const newFileName = file.replace("template", projectName);
+            fs.renameSync(path_1.default.join(projectFolder, file), path_1.default.join(projectFolder, newFileName));
+        }
+    });
+    // Rename the template.sln file
+    const oldPath = path_1.default.join(projectDir, "template.sln");
+    const newPath = path_1.default.join(projectDir, `${projectName}.sln`);
+    fs.renameSync(oldPath, newPath);
+}
+function copyFiles(workingDir, projectFolder) {
+    const extensions = [".cpp", ".h", ".dat", ".txt"];
+    fs.readdirSync(workingDir).forEach((file) => {
+        const ext = path_1.default.extname(file);
+        if (extensions.includes(ext)) {
+            fs.copyFileSync(path_1.default.join(workingDir, file), path_1.default.join(projectFolder, file));
+        }
+    });
+    // Delete the original files
+    fs.readdirSync(workingDir).forEach((file) => {
+        const ext = path_1.default.extname(file);
+        if (extensions.includes(ext)) {
+            fs.unlinkSync(path_1.default.join(workingDir, file));
+        }
+    });
+    // Delete the compiled files
+    fs.readdirSync(workingDir).forEach((file) => {
+        const ext = path_1.default.extname(file);
+        if (ext === ".exe" || ext === ".obj" || ext === "") {
+            fs.unlinkSync(path_1.default.join(workingDir, file));
+        }
+    });
+}
+function replaceIdsInSolutionFile(projectName, projectDir) {
+    const solutionFilePath = path_1.default.join(projectDir, `${projectName}.sln`);
+    let content = fs.readFileSync(solutionFilePath, "utf-8");
+    content = content.replace(/NAME/g, projectName);
+    content = content.replace(/PROJECTID/g, (0, guidGenerator_1.generateGUID)());
+    content = content.replace(/SOLUTIONID/g, (0, guidGenerator_1.generateGUID)());
+    fs.writeFileSync(solutionFilePath, content, "utf-8");
+}
+
+
+/***/ }),
+/* 6 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.generateGUID = generateGUID;
+function generateGUID() {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+        const r = (Math.random() * 16) | 0;
+        const v = c === "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+    });
+}
+
+
+/***/ }),
+/* 7 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.appendFileTypesToFilters = appendFileTypesToFilters;
+const path_1 = __importDefault(__webpack_require__(3));
+const fs = __importStar(__webpack_require__(4));
+const codeFile_1 = __webpack_require__(8);
+function appendFileTypesToFilters(projectFolder, projectName) {
+    const ignoreFiles = [
+        `${projectName}.vcxproj`,
+        `${projectName}.vcxproj.filters`,
+        `${projectName}.vcxproj.user`,
+    ];
+    const codeFiles = fs
+        .readdirSync(projectFolder)
+        .filter((fileName) => !ignoreFiles.includes(fileName))
+        .map((fileName) => ({
+        fileType: getFileType(fileName),
+        fileName: fileName,
+    }));
+    let firstPart = "";
+    const filters = appendSecondPartFilter(codeFiles, firstPart);
+    const vcxproj = appendSecondPartVcxproj(codeFiles, firstPart);
+    fs.appendFileSync(path_1.default.join(projectFolder, `${projectName}.vcxproj.filters`), filters);
+    fs.appendFileSync(path_1.default.join(projectFolder, `${projectName}.vcxproj`), vcxproj);
+}
+function appendSecondPartFilter(codeFiles, firstPart) {
+    let itemGroup = "\n  <ItemGroup>";
+    let compile = itemGroup;
+    let text = itemGroup;
+    let header = itemGroup;
+    for (let file of codeFiles) {
+        if (file) {
+            switch (file.fileType) {
+                case codeFile_1.FileType.SOURCE:
+                    compile += `\n    <ClCompile Include="${file.fileName}">\n      <Filter>Source Files</Filter>\n    </ClCompile>`;
+                    break;
+                case codeFile_1.FileType.TEXT:
+                    text += `\n    <Text Include="${file.fileName}">\n      <Filter>Source Files</Filter>\n    </Text>`;
+                    break;
+                case codeFile_1.FileType.HEADER:
+                    header += `\n    <ClInclude Include="${file.fileName}">\n      <Filter>Header Files</Filter>\n    </ClInclude>`;
+                    break;
+            }
+        }
+    }
+    if (compile !== itemGroup) {
+        compile += "\n  </ItemGroup>";
+        firstPart += compile;
+    }
+    if (text !== itemGroup) {
+        text += "\n  </ItemGroup>";
+        firstPart += text;
+    }
+    if (header !== itemGroup) {
+        header += "\n  </ItemGroup>";
+        firstPart += header;
+    }
+    firstPart += "\n</Project>";
+    return firstPart;
+}
+function appendSecondPartVcxproj(codeFiles, firstPart) {
+    let itemGroup = "\n  <ItemGroup>";
+    let compile = itemGroup;
+    let text = itemGroup;
+    let header = itemGroup;
+    for (let file of codeFiles) {
+        if (file) {
+            switch (file.fileType) {
+                case codeFile_1.FileType.SOURCE:
+                    compile += `\n    <ClCompile Include="${file.fileName}" />`;
+                    break;
+                case codeFile_1.FileType.TEXT:
+                    text += `\n    <Text Include="${file.fileName}" />`;
+                    break;
+                case codeFile_1.FileType.HEADER:
+                    header += `\n    <ClInclude Include="${file.fileName}" />`;
+                    break;
+            }
+        }
+    }
+    if (compile !== itemGroup) {
+        compile += "\n  </ItemGroup>";
+        firstPart += compile;
+    }
+    if (text !== itemGroup) {
+        text += "\n  </ItemGroup>";
+        firstPart += text;
+    }
+    if (header !== itemGroup) {
+        header += "\n  </ItemGroup>";
+        firstPart += header;
+    }
+    firstPart +=
+        '\n  <Import Project="$(VCTargetsPath)\\Microsoft.Cpp.targets" />\n  <ImportGroup Label="ExtensionTargets">\n  </ImportGroup>\n</Project>';
+    return firstPart;
+}
+function getFileType(fileName) {
+    const ext = path_1.default.extname(fileName);
+    switch (ext) {
+        case ".cpp":
+            return codeFile_1.FileType.SOURCE;
+        case ".h":
+            return codeFile_1.FileType.HEADER;
+        case ".dat":
+        case ".txt":
+        default:
+            return codeFile_1.FileType.TEXT;
+    }
+}
+
+
+/***/ }),
+/* 8 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.FileType = void 0;
+var FileType;
+(function (FileType) {
+    FileType[FileType["SOURCE"] = 0] = "SOURCE";
+    FileType[FileType["TEXT"] = 1] = "TEXT";
+    FileType[FileType["HEADER"] = 2] = "HEADER";
+})(FileType || (exports.FileType = FileType = {}));
+
+
+/***/ })
+/******/ 	]);
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __webpack_require__(0);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
+/******/ })()
+;
+//# sourceMappingURL=extension.js.map
