@@ -15,7 +15,7 @@
   ],
   "icon": "images/vsicon.png",
   "pricing": "Free",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "GPL-3.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/PostGuitarist/vscode-to-vs-extension.git"
