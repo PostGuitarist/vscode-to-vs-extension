@@ -1,7 +1,11 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
-import { copyFiles, copyTemplateFiles, replaceIdsInSolutionFile } from "./helpers";
+import {
+  copyFiles,
+  copyTemplateFiles,
+  replaceIdsInSolutionFile,
+} from "./helpers";
 import { appendFileTypesToFilters } from "./appendHelpers";
 
 export async function generateVSProjectFiles() {
@@ -67,7 +71,6 @@ export async function generateVSProjectFiles() {
     copyFiles(workspaceFolder, projectFolder);
   } catch (error) {
     if (error instanceof Error) {
-
       // Is this the best way to handle this error? Probably not.
 
       if (!error.message.includes("EPERM")) {
@@ -83,11 +86,13 @@ export async function generateVSProjectFiles() {
   try {
     appendFileTypesToFilters(projectFolder, newName!);
   } catch (error) {
-    vscode.window.showErrorMessage(`Error appending file types to filters: ${error}`);
+    vscode.window.showErrorMessage(
+      `Error appending file types to filters: ${error}`,
+    );
     return;
   }
 
   vscode.window.showInformationMessage(
-    "Visual Studio project files generated successfully"
+    "Visual Studio project files generated successfully",
   );
 }

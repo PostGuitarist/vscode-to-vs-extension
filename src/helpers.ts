@@ -5,7 +5,7 @@ import { generateGUID } from "./guidGenerator";
 export function copyTemplateFiles(
   projectFolder: string,
   projectDir: string,
-  projectName: string
+  projectName: string,
 ) {
   // Copy the template files
   const templateDir = path.join(__dirname, "assets");
@@ -13,7 +13,7 @@ export function copyTemplateFiles(
     if (file !== "template.sln" && file.startsWith("template.")) {
       fs.copyFileSync(
         path.join(templateDir, file),
-        path.join(projectFolder, file)
+        path.join(projectFolder, file),
       );
     }
   });
@@ -22,7 +22,7 @@ export function copyTemplateFiles(
   const slnFile = "template.sln";
   fs.copyFileSync(
     path.join(templateDir, slnFile),
-    path.join(projectDir, slnFile)
+    path.join(projectDir, slnFile),
   );
 
   // Rename the template files
@@ -31,7 +31,7 @@ export function copyTemplateFiles(
       const newFileName = file.replace("template", projectName);
       fs.renameSync(
         path.join(projectFolder, file),
-        path.join(projectFolder, newFileName)
+        path.join(projectFolder, newFileName),
       );
     }
   });
@@ -51,7 +51,7 @@ export function copyFiles(workingDir: string, projectFolder: string) {
     if (extensions.includes(ext)) {
       fs.copyFileSync(
         path.join(workingDir, file),
-        path.join(projectFolder, file)
+        path.join(projectFolder, file),
       );
     }
   });
@@ -75,7 +75,10 @@ export function copyFiles(workingDir: string, projectFolder: string) {
   });
 }
 
-export function replaceIdsInSolutionFile(projectName: string, projectDir: string) {
+export function replaceIdsInSolutionFile(
+  projectName: string,
+  projectDir: string,
+) {
   const solutionFilePath = path.join(projectDir, `${projectName}.sln`);
   let content = fs.readFileSync(solutionFilePath, "utf-8");
 

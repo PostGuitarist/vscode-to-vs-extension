@@ -2,7 +2,10 @@ import path from "path";
 import * as fs from "fs";
 import { CodeFile, FileType } from "./codeFile";
 
-export function appendFileTypesToFilters(projectFolder: string, projectName: string) {
+export function appendFileTypesToFilters(
+  projectFolder: string,
+  projectName: string,
+) {
   const ignoreFiles = [
     `${projectName}.vcxproj`,
     `${projectName}.vcxproj.filters`,
@@ -22,17 +25,17 @@ export function appendFileTypesToFilters(projectFolder: string, projectName: str
 
   fs.appendFileSync(
     path.join(projectFolder, `${projectName}.vcxproj.filters`),
-    filters
+    filters,
   );
   fs.appendFileSync(
     path.join(projectFolder, `${projectName}.vcxproj`),
-    vcxproj
+    vcxproj,
   );
 }
 
 function appendSecondPartFilter(
   codeFiles: CodeFile[],
-  firstPart: string
+  firstPart: string,
 ): string {
   let itemGroup = "\n  <ItemGroup>";
   let compile = itemGroup;
@@ -75,7 +78,7 @@ function appendSecondPartFilter(
 
 function appendSecondPartVcxproj(
   codeFiles: CodeFile[],
-  firstPart: string
+  firstPart: string,
 ): string {
   let itemGroup = "\n  <ItemGroup>";
   let compile = itemGroup;
