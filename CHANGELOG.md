@@ -4,6 +4,10 @@ All notable changes to the "vscode-to-vs" extension will be documented in this f
 
 This is based on [Keep a Changelog](http://keepachangelog.com/)
 
+## [1.5.0] - 12-05-2025
+- Update: Update dependencies to latest versions
+- Fix: Fix vulnerabilities in dependencies (glob)
+
 ## [1.4.1] - 08-23-2024
 
 - Refactor: Refactor the code to make it more readable
