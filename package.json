@@ -2,11 +2,11 @@
   "name": "vscode-to-vs",
   "displayName": "VSCode to Visual Studio",
   "publisher": "PostGuitarist",
-  "description": "Creates solution files for a Visual Studio C++ project with just source files.",
+  "description": "Generate Visual Studio C++ solution and project files from a folder of source files.",
   "author": {
     "name": "Zaden Connell"
   },
-  "version": "1.6.0",
+  "version": "2.0.0",
   "engines": {
     "vscode": "^1.92.0"
   },
@@ -44,33 +44,90 @@
     "commands": [
       {
         "command": "vscode-to-vs.generateCppSolution",
-        "title": "Generate C++ Solution Files"
+        "title": "Generate C++ Solution Files",
+        "category": "VSCode to Visual Studio"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "VSCode to Visual Studio",
+      "properties": {
+        "vscodeToVs.sourceFileExtensions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            ".c",
+            ".cc",
+            ".cpp",
+            ".cxx",
+            ".c++"
+          ],
+          "markdownDescription": "File extensions collected as `<ClCompile>` source files. A leading dot is optional and matching is case-insensitive."
+        },
+        "vscodeToVs.headerFileExtensions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            ".h",
+            ".hh",
+            ".hpp",
+            ".hxx",
+            ".h++",
+            ".inl"
+          ],
+          "markdownDescription": "File extensions collected as `<ClInclude>` headers. A leading dot is optional and matching is case-insensitive."
+        },
+        "vscodeToVs.textFileExtensions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            ".txt",
+            ".dat"
+          ],
+          "markdownDescription": "File extensions collected as `<Text>` items, for data files a program reads at run time."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
     "compile": "webpack",
     "watch": "webpack --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
-    "compile-tests": "tsc -p . --outDir out",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "npm run compile-tests && npm run compile && npm run lint",
-    "lint": "eslint src --ext ts",
+    "compile-tests": "tsc -p .",
+    "watch-tests": "tsc -p . -w",
+    "typecheck": "tsc -p . --noEmit",
+    "lint": "eslint src",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "check": "npm run lint && npm run format:check && npm run typecheck && npm run test:unit",
+    "pretest": "npm run compile-tests && npm run compile",
     "test": "vscode-test"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.20.1",
     "@types/vscode": "^1.92.0",
-    "@types/mocha": "^10.0.7",
-    "@types/node": "20.x",
-    "@typescript-eslint/eslint-plugin": "^7.14.1",
-    "@typescript-eslint/parser": "^7.11.0",
-    "eslint": "^8.57.0",
-    "typescript": "^5.4.5",
-    "ts-loader": "^9.5.1",
-    "webpack": "^5.92.1",
-    "webpack-cli": "^5.1.4",
-    "@vscode/test-cli": "^0.0.9",
-    "@vscode/test-electron": "^2.4.0"
+    "@vitest/coverage-v8": "^5.0.0",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.1.0",
+    "copy-webpack-plugin": "^14.0.0",
+    "eslint": "^10.9.1",
+    "prettier": "^3.9.6",
+    "ts-loader": "^9.6.2",
+    "typescript": "~5.9",
+    "typescript-eslint": "^8.69.0",
+    "vitest": "^5.0.0",
+    "webpack": "^5.110.3",
+    "webpack-cli": "^7.2.3"
   }
 }

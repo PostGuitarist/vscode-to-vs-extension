@@ -1,4 +1,11 @@
 # dependencies
 node_modules
 
-# build
+# build output
+dist
+out
+*.vsix
+
+# test and coverage output
+.vscode-test
+coverage

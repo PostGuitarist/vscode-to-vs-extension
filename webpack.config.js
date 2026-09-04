@@ -1,30 +1,32 @@
 //@ts-check
-
 "use strict";
 
-const path = require("path");
+const path = require("node:path");
+const CopyPlugin = require("copy-webpack-plugin");
 
-//@ts-check
-/** @typedef {import('webpack').Configuration} WebpackConfig **/
+/** @typedef {import('webpack').Configuration} WebpackConfig */
 
-/** @type WebpackConfig */
+/**
+ * The extension runs in a Node.js context inside VS Code.
+ * @see https://code.visualstudio.com/api/working-with-extensions/bundling-extension
+ * @type {WebpackConfig}
+ */
 const extensionConfig = {
-  target: "node", // VS Code extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
-  mode: "none", // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
-
-  entry: "./src/extension.ts", // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
+  target: "node",
+  // Overridden to "production" by `npm run package`.
+  mode: "none",
+  entry: "./src/extension.ts",
   output: {
-    // the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
     path: path.resolve(__dirname, "dist"),
     filename: "extension.js",
     libraryTarget: "commonjs2",
+    clean: true,
   },
   externals: {
-    vscode: "commonjs vscode", // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
-    // modules added here also need to be added in the .vscodeignore file
+    // Provided by the extension host at runtime; also listed in .vscodeignore.
+    vscode: "commonjs vscode",
   },
   resolve: {
-    // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
     extensions: [".ts", ".js"],
   },
   module: {
@@ -32,17 +34,22 @@ const extensionConfig = {
       {
         test: /\.ts$/,
         exclude: /node_modules/,
-        use: [
-          {
-            loader: "ts-loader",
-          },
-        ],
+        use: [{ loader: "ts-loader" }],
       },
     ],
   },
+  plugins: [
+    // The .sln/.vcxproj templates are data, not code, so they are copied
+    // rather than bundled. src/core/templates.ts reads them from dist/assets.
+    new CopyPlugin({
+      patterns: [{ from: "assets", to: "assets" }],
+    }),
+  ],
   devtool: "nosources-source-map",
   infrastructureLogging: {
-    level: "log", // enables logging required for problem matchers
+    // Enables the output the $ts-webpack-watch problem matcher parses.
+    level: "log",
   },
 };
+
 module.exports = [extensionConfig];

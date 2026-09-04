@@ -1,25 +1,32 @@
 import * as vscode from "vscode";
-import { generateVSProjectFiles } from "./projectGenerator";
 
-export function activate(context: vscode.ExtensionContext) {
-  console.log('Extension "vscode-to-vs" is now active!');
+import {
+  GENERATE_SOLUTION_COMMAND,
+  generateSolutionCommand,
+} from "./commands/generateSolution";
+import { Logger } from "./logger";
 
-  // Register the command
-  const disposable = vscode.commands.registerCommand(
-    "vscode-to-vs.generateCppSolution",
-    async () => {
-      try {
-        generateVSProjectFiles();
-      } catch (error) {
-        vscode.window.showErrorMessage(
-          `Error generating project files: ${error}`,
-        );
-      }
-    },
+/** Where the build copies `assets/`, relative to the extension root. */
+const TEMPLATES_PATH = ["dist", "assets"] as const;
+
+export function activate(context: vscode.ExtensionContext): void {
+  const logger = new Logger();
+  context.subscriptions.push(logger);
+
+  const templatesDir = vscode.Uri.joinPath(
+    context.extensionUri,
+    ...TEMPLATES_PATH,
+  ).fsPath;
+
+  logger.info(`Activated; using templates from ${templatesDir}`);
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(GENERATE_SOLUTION_COMMAND, () =>
+      generateSolutionCommand(templatesDir, logger),
+    ),
   );
-
-  context.subscriptions.push(disposable);
 }
 
-// Called when extension is deactivated
-export function deactivate() {}
+export function deactivate(): void {
+  // Everything is disposed through context.subscriptions.
+}
