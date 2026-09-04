@@ -1,0 +1,33 @@
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # One PR for the routine dev-tooling churn rather than one per package.
+      dev-dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+    ignore:
+      # Must track the Node version in VS Code's extension host, not latest.
+      - dependency-name: "@types/node"
+        update-types:
+          - version-update:semver-major
+      # Must not outrun engines.vscode, or the extension can call APIs that are
+      # missing on the oldest VS Code it claims to support.
+      - dependency-name: "@types/vscode"
+      # typescript-eslint does not support TypeScript 7 yet.
+      - dependency-name: typescript
+        update-types:
+          - version-update:semver-major
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

@@ -1,14 +1,20 @@
+# Everything the packaged extension does not need. dist/ (the bundle and the
+# copied templates) is what ships.
+.github/**
 .vscode/**
 .vscode-test/**
-out/**
+.vscode-test.mjs
+assets/**
+coverage/**
 node_modules/**
+out/**
 src/**
 .gitignore
-.yarnrc
+.prettierignore
+.prettierrc.json
+eslint.config.mjs
+vitest.config.mts
 webpack.config.js
-vsc-extension-quickstart.md
 **/tsconfig.json
-**/.eslintrc.json
 **/*.map
 **/*.ts
-**/.vscode-test.*
